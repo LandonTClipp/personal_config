@@ -1,0 +1,9 @@
+#!/bin/bash
+# Disk performance. Prints the directory size rate of change. Higher sleep durations provide a better average.
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $(basename $0) [directory path] [sleep duration]"
+    exit 1
+fi
+
+a=$({ time for i in 0 1; do du --block-size=MB $1; sleep $2; done ; } 2>&1 ); size=$(printf "$a\n" | head -n2); b=$( printf "$size" | head -n1 | cut -d' ' -f1 | cut -d'M' -f1); c=$( printf "$size" | tail -n1 | cut -d' ' -f1 | cut -d'M' -f1); times=$(printf "$a\n" | tail -n3); time=$(printf "$times" | head -n1 | cut -d'm' -f2 | cut -d'.' -f1); echo "$(( $(( $c - $b )) / $time)) MB/s";
